@@ -1,0 +1,137 @@
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  background: var(--surface-color);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: all 0.3s ease;
+}
+
+[data-theme='dark'] .sidebar {
+  background: var(--dark-surface);
+  border-right-color: var(--dark-border);
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme='dark'] .sidebar-header {
+  border-bottom-color: var(--dark-border);
+}
+
+.sidebar-header h2 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.sidebar-nav {
+  padding: 1.5rem 1rem;
+  flex: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.nav-link svg {
+  margin-right: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.nav-link:hover {
+  background: var(--hover-color);
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .nav-link:hover {
+  background: var(--dark-hover);
+}
+
+.nav-link.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+[data-theme='dark'] .nav-link.active {
+  background: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(60, 177, 255, 0.2);
+}
+
+.sidebar-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+[data-theme='dark'] .sidebar-footer {
+  border-top-color: var(--dark-border);
+}
+
+.logout-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border: none;
+  background: var(--urgent-light);
+  color: var(--urgent-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+[data-theme='dark'] .logout-button {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.logout-button svg {
+  margin-right: 0.5rem;
+}
+
+.logout-button:hover {
+  background: var(--urgent-color);
+  color: white;
+  transform: translateY(-1px);
+}
+
+[data-theme='dark'] .logout-button:hover {
+  background: #e74c3c;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  [data-theme='dark'] .sidebar {
+    border-bottom-color: var(--dark-border);
+  }
+
+  .sidebar-nav {
+    padding: 1rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem;
+  }
+}

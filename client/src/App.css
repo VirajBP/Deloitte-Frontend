@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
+<<<<<<< HEAD
+=======
+  /* Light theme variables */
+>>>>>>> 291374c (Basic Ui Implementation)
   --primary-color: #3cb1ff;
   --primary-light: #ebf5fb;
   --secondary-color: #2ecc71;
@@ -19,6 +23,33 @@
   --input-border: #e2e8f0;
   --input-focus: #3498db;
   --total-order-color: #8a2be2;
+<<<<<<< HEAD
+=======
+  
+  /* Dark theme variables */
+  --dark-background: #121212;
+  --dark-surface: #1e1e1e;
+  --dark-surface-2: #2d2d2d;
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #a0a0a0;
+  --dark-border: #333333;
+  --dark-hover: #2a2a2a;
+  --dark-input-bg: #2d2d2d;
+  --dark-input-border: #404040;
+  --dark-card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --dark-button-shadow: 0 4px 12px rgba(60, 177, 255, 0.2);
+}
+
+[data-theme='dark'] {
+  --background-color: var(--dark-background);
+  --surface-color: var(--dark-surface);
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --border-color: var(--dark-border);
+  --hover-color: var(--dark-hover);
+  --input-bg: var(--dark-input-bg);
+  --input-border: var(--dark-input-border);
+>>>>>>> 291374c (Basic Ui Implementation)
 }
 
 * {
@@ -44,6 +75,7 @@ body {
 
 .glass-card {
   background: var(--surface-color);
+<<<<<<< HEAD
   border-radius: 12px;
   border: 1px solid var(--border-color);
   padding: 1.5rem;
@@ -52,6 +84,23 @@ body {
 
 .button {
   background: linear-gradient(135deg, var(--primary-color), var(--primary-color));
+=======
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+[data-theme='dark'] .glass-card {
+  background: var(--dark-surface-2);
+  box-shadow: var(--dark-card-shadow);
+  border-color: var(--dark-border);
+}
+
+.button {
+  background: linear-gradient(135deg, var(--primary-color), #2b96ff);
+>>>>>>> 291374c (Basic Ui Implementation)
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -61,6 +110,13 @@ body {
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
 }
 
+<<<<<<< HEAD
+=======
+[data-theme='dark'] .button {
+  box-shadow: var(--dark-button-shadow);
+}
+
+>>>>>>> 291374c (Basic Ui Implementation)
 .button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(52, 152, 219, 0.35);
@@ -79,10 +135,26 @@ body {
 
 .input:focus {
   outline: none;
+<<<<<<< HEAD
   border-color: var(--input-focus);
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
 }
 
+=======
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+}
+
+[data-theme='dark'] .input {
+  background: var(--dark-input-bg);
+  border-color: var(--dark-input-border);
+}
+
+[data-theme='dark'] .input:focus {
+  box-shadow: 0 0 0 3px rgba(60, 177, 255, 0.15);
+}
+
+>>>>>>> 291374c (Basic Ui Implementation)
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
   margin-bottom: 1rem;
@@ -108,6 +180,43 @@ p {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
+<<<<<<< HEAD
+=======
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  padding: 0;
+}
+
+[data-theme='dark'] .theme-toggle {
+  background: var(--dark-surface-2);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] .theme-toggle:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+>>>>>>> 291374c (Basic Ui Implementation)
 /* Animation classes */
 .fade-in {
   animation: fadeIn 0.5s ease-in;

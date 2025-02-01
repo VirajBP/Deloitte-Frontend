@@ -1,7 +1,11 @@
 .dashboard {
+<<<<<<< HEAD
   padding: 1.5rem;
   background: var(--background-color);
   min-height: 100vh;
+=======
+  background: var(--background-color);
+>>>>>>> 291374c (Basic Ui Implementation)
   color: var(--text-primary);
 }
 
@@ -90,7 +94,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
+<<<<<<< HEAD
   margin-bottom: 2rem;
+=======
+>>>>>>> 291374c (Basic Ui Implementation)
 }
 
 .metric-card {
@@ -666,4 +673,107 @@
     width: calc(100% - 2rem);
     right: 1rem;
   }
+<<<<<<< HEAD
+=======
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.dashboard-section {
+  background: var(--surface-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-section h2 {
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+}
+
+/* Email Card Styles */
+.email-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.email-card.flagged {
+  border-left: 4px solid var(--warning-color);
+}
+
+.email-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.email-meta {
+  display: flex;
+  gap: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.flag-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--warning-color);
+}
+
+.email-card-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Processed Order Card Styles */
+.processed-order-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.order-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.status-icon.completed {
+  color: var(--secondary-color);
+}
+
+.processing-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Add hover effect */
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+>>>>>>> 291374c (Basic Ui Implementation)
 }
