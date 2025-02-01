@@ -288,11 +288,56 @@ const OrderRow = ({ order }) => {
   );
 };
 
-const OrderList = () => {
+const OrderList = ({ orders, limitEntries }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // If limitEntries is true, use simplified version
+  if (limitEntries) {
+    return (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Order #</TableCell>
+              <TableCell>Customer</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell align="right">Amount</TableCell>
+              <TableCell>Progress</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orders.map((order) => (
+              <TableRow key={order.id} hover>
+                <TableCell>{order.orderNumber || 'N/A'}</TableCell>
+                <TableCell>{order.customerName || 'N/A'}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={order.status || 'Unknown'}
+                    color={getStatusColor(order.processingLevel, order.processingLevel)}
+                    size="small"
+                  />
+                </TableCell>
+                <TableCell align="right">
+                  ${(order.amount || 0).toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={ORDER_STATUS[`LEVEL_${order.processingLevel}`]?.status || 'Unknown'}
+                    color={getStatusColor(order.processingLevel, order.processingLevel)}
+                    size="small"
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
+
+  // For the full page version
   const filteredOrders = mockProcessedOrders.filter(order =>
     (order.orderNumber?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     (order.customerName?.toLowerCase() || '').includes(searchTerm.toLowerCase())
@@ -307,6 +352,7 @@ const OrderList = () => {
     setPage(0);
   };
 
+  // Return full version with search and pagination
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Paper sx={{ p: 2 }}>

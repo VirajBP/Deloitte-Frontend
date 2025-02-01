@@ -8,22 +8,16 @@ import {
     Paper,
     Avatar,
     CircularProgress,
-<<<<<<< HEAD
-    Button
-=======
     Button,
     Grid,
     TextField,
     IconButton,
     Tabs,
     Tab,
->>>>>>> 291374c (Basic Ui Implementation)
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-<<<<<<< HEAD
-=======
 import {
     Edit as EditIcon,
     Save as SaveIcon,
@@ -33,18 +27,14 @@ import {
     History as HistoryIcon,
 } from '@mui/icons-material';
 import './Profile.css';
->>>>>>> 291374c (Basic Ui Implementation)
 
 const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [profileData, setProfileData] = useState(null);
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-<<<<<<< HEAD
-=======
     const [editMode, setEditMode] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
->>>>>>> 291374c (Basic Ui Implementation)
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -72,8 +62,6 @@ const Profile = () => {
         toast.info('Logged out successfully');
     };
 
-<<<<<<< HEAD
-=======
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
     };
@@ -92,7 +80,6 @@ const Profile = () => {
         // Reset any changes
     };
 
->>>>>>> 291374c (Basic Ui Implementation)
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -104,75 +91,6 @@ const Profile = () => {
     return (
         <Container component="main" maxWidth="sm">
             <ToastContainer />
-<<<<<<< HEAD
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
-                <Paper
-                    elevation={3}
-                    sx={{
-                        p: 4,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        width: '100%',
-                    }}
-                >
-                    <Avatar
-                        sx={{
-                            m: 1,
-                            bgcolor: 'primary.main',
-                            width: 80,
-                            height: 80,
-                            fontSize: '2rem',
-                        }}
-                    >
-                        {profileData?.name?.charAt(0)?.toUpperCase()}
-                    </Avatar>
-
-                    <Typography component="h1" variant="h4" sx={{ mt: 2 }}>
-                        Profile
-                    </Typography>
-
-                    <Box sx={{ mt: 3, width: '100%' }}>
-                        <Typography variant="h6" color="primary" gutterBottom>
-                            Name
-                        </Typography>
-                        <Typography variant="body1" gutterBottom>
-                            {profileData?.name}
-                        </Typography>
-
-                        <Typography variant="h6" color="primary" sx={{ mt: 2 }} gutterBottom>
-                            Email
-                        </Typography>
-                        <Typography variant="body1" gutterBottom>
-                            {profileData?.email}
-                        </Typography>
-
-                        <Typography variant="h6" color="primary" sx={{ mt: 2 }} gutterBottom>
-                            Account Created
-                        </Typography>
-                        <Typography variant="body1" gutterBottom>
-                            {new Date(profileData?.createdAt).toLocaleDateString()}
-                        </Typography>
-
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            onClick={handleLogout}
-                            sx={{ mt: 4 }}
-                        >
-                            Logout
-                        </Button>
-                    </Box>
-                </Paper>
-=======
             <Box className="profile-container">
                 <Paper elevation={0} className="profile-header">
                     <Grid container spacing={3} alignItems="center">
@@ -287,7 +205,6 @@ const Profile = () => {
                         {/* Add other tab contents here */}
                     </Box>
                 </Box>
->>>>>>> 291374c (Basic Ui Implementation)
             </Box>
         </Container>
     );

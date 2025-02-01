@@ -1,11 +1,5 @@
 .dashboard {
-<<<<<<< HEAD
-  padding: 1.5rem;
   background: var(--background-color);
-  min-height: 100vh;
-=======
-  background: var(--background-color);
->>>>>>> 291374c (Basic Ui Implementation)
   color: var(--text-primary);
 }
 
@@ -94,10 +88,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
-<<<<<<< HEAD
-  margin-bottom: 2rem;
-=======
->>>>>>> 291374c (Basic Ui Implementation)
 }
 
 .metric-card {
@@ -673,8 +663,6 @@
     width: calc(100% - 2rem);
     right: 1rem;
   }
-<<<<<<< HEAD
-=======
 }
 
 .dashboard-grid {
@@ -775,5 +763,4 @@
 .metric-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
->>>>>>> 291374c (Basic Ui Implementation)
 }

@@ -927,3 +927,18 @@ export const mockProcessedOrders = mockEmails.filter(email => email.canBeProcess
   emailId: email.id
 }));
 
+export const orderStats = {
+  totalNew: 15,
+  totalUrgent: 5,
+  totalPending: 8,
+  totalProcessing: 12,
+  totalCompleted: 25,
+  efficiency: 85,
+  averageProcessingTime: "2.5 hours",
+  distribution: {
+    urgent: 30,
+    high: 45,
+    normal: 25
+  }
+};
+

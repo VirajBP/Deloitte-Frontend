@@ -33,6 +33,14 @@ import {
 } from '@mui/icons-material';
 import { mockEmails } from '../../mocks/mockData';
 
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return '0.00';
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+};
+
 const EmailRow = ({ email }) => {
   const [open, setOpen] = useState(false);
 
@@ -211,7 +219,7 @@ const EmailRow = ({ email }) => {
                                       Quantity: {item.quantity || 'Not specified'}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                      Price: ${item.price?.toLocaleString() || '0.00'}
+                                      Price: ${formatCurrency(item.price)}
                                     </Typography>
                                     {item.quantity && (
                                       <Typography 
@@ -219,7 +227,7 @@ const EmailRow = ({ email }) => {
                                         color="text.secondary"
                                         sx={{ mt: 1 }}
                                       >
-                                        Subtotal: ${((item.quantity || 0) * (item.price || 0)).toLocaleString()}
+                                        Subtotal: ${formatCurrency((item.quantity || 0) * (item.price || 0))}
                                       </Typography>
                                     )}
                                   </Box>
@@ -230,7 +238,7 @@ const EmailRow = ({ email }) => {
                           <Grid item xs={12}>
                             <Box display="flex" justifyContent="flex-end" mt={2}>
                               <Typography variant="subtitle1">
-                                Total Amount: ${email.orderDetails.totalAmount?.toLocaleString() || '0.00'}
+                                Total Amount: ${formatCurrency(email.orderDetails?.totalAmount)}
                               </Typography>
                             </Box>
                           </Grid>
@@ -252,15 +260,76 @@ const EmailRow = ({ email }) => {
   );
 };
 
-const EmailList = () => {
+const EmailList = ({ limitEntries }) => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(limitEntries || 10);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // If limitEntries is true, use simplified version
+  if (limitEntries) {
+    const displayedEmails = mockEmails.slice(0, limitEntries);
+
+    return (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Subject</TableCell>
+              <TableCell>Sender</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {displayedEmails.map((email) => (
+              <TableRow 
+                key={email.id}
+                hover
+                sx={{ 
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: (theme) => 
+                      theme.palette.mode === 'dark' 
+                        ? 'rgba(255, 255, 255, 0.08)'
+                        : 'rgba(0, 0, 0, 0.04)'
+                  }
+                }}
+              >
+                <TableCell>{email.subject}</TableCell>
+                <TableCell>{email.sender}</TableCell>
+                <TableCell>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    {email.canBeProcessed ? (
+                      <Tooltip title="Can be processed as order">
+                        <CheckCircle color="success" />
+                      </Tooltip>
+                    ) : (
+                      <Tooltip title={email.issueDescription || "Needs manual attention"}>
+                        <Flag color="error" />
+                      </Tooltip>
+                    )}
+                  </Box>
+                </TableCell>
+                <TableCell align="right">
+                  <IconButton size="small" color="primary">
+                    <Visibility />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
+
+  // For the full page version
   const filteredEmails = mockEmails.filter(email =>
     email.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
     email.sender.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const displayedEmails = filteredEmails.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -271,6 +340,7 @@ const EmailList = () => {
     setPage(0);
   };
 
+  // Return full version with search and pagination
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Paper sx={{ p: 2 }}>
@@ -305,11 +375,9 @@ const EmailList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredEmails
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((email) => (
-                  <EmailRow key={email.id} email={email} />
-                ))}
+              {displayedEmails.map((email) => (
+                <EmailRow key={email.id} email={email} />
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
