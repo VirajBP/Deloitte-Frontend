@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { CircularProgress, Box } from '@mui/material';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedUserType }) => {
     const { user, loading } = useAuth();
 
     if (loading) {
@@ -16,6 +16,10 @@ const ProtectedRoute = ({ children }) => {
 
     if (!user) {
         return <Navigate to="/signin" />;
+    }
+
+    if (allowedUserType && user.userType !== allowedUserType) {
+        return <Navigate to="/dashboard" />;
     }
 
     return children;

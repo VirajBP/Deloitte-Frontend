@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
+import { Container, Box, Typography, TextField, Button, Alert, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import {
-    Container,
-    Box,
-    TextField,
-    Button,
-    Typography,
-    Link,
-    Alert,
-    CircularProgress
-} from '@mui/material';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
 
-const SignIn = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+const UserSignIn = () => {
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,44 +29,29 @@ const SignIn = () => {
         setIsLoading(true);
 
         try {
-            // First, try to get the user to check their role
-            const user = await axios.post('http://localhost:5000/api/signin', {
-                email,
-                password
-            });
-
-            // If user exists but is not a manufacturer, show error
-            if (user.data.user.role === 'user') {
-                setError('Please use the user sign-in page');
-                setIsLoading(false);
-                return;
-            }
-
-            // If we get here, proceed with manufacturer sign-in
             const response = await axios.post('http://localhost:5000/api/signin', {
-                email,
-                password,
-                role: 'manufacturer'
+                email: formData.email,
+                password: formData.password,
+                role: 'user'
             });
 
             if (response.data && response.data.token) {
+                // Add role to user data
                 const userData = {
                     ...response.data.user,
-                    role: 'manufacturer'
+                    role: 'user'
                 };
                 
                 login(userData, response.data.token);
-
                 toast.success('Successfully logged in!', {
                     position: "top-right",
-                    autoClose: 1500,
+                    autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
                     draggable: true
                 });
-
-                navigate('/dashboard');
+                navigate('/user/dashboard');
             }
         } catch (err) {
             const errorMessage = err.response?.data?.message || 'An error occurred during sign in';
@@ -82,7 +67,6 @@ const SignIn = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <ToastContainer />
             <Box
                 sx={{
                     marginTop: 8,
@@ -92,7 +76,7 @@ const SignIn = () => {
                 }}
             >
                 <Typography component="h1" variant="h5">
-                    Manufacturer Sign In
+                    User Sign In
                 </Typography>
                 {error && <Alert severity="error" sx={{ mt: 2, width: '100%' }}>{error}</Alert>}
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
@@ -105,9 +89,9 @@ const SignIn = () => {
                         name="email"
                         autoComplete="email"
                         autoFocus
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled={isLoading}
+                        value={formData.email}
+                        onChange={handleChange}
+                        error={!!error}
                     />
                     <TextField
                         margin="normal"
@@ -118,9 +102,9 @@ const SignIn = () => {
                         type="password"
                         id="password"
                         autoComplete="current-password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        disabled={isLoading}
+                        value={formData.password}
+                        onChange={handleChange}
+                        error={!!error}
                     />
                     <Button
                         type="submit"
@@ -132,11 +116,11 @@ const SignIn = () => {
                         {isLoading ? 'Signing in...' : 'Sign In'}
                     </Button>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-                        <Link href="/signup" variant="body2">
+                        <Link href="/user/signup" variant="body2">
                             Don't have an account? Sign Up
                         </Link>
-                        <Link href="/user/signin" variant="body2">
-                            User Sign In
+                        <Link href="/signin" variant="body2">
+                            Manufacturer Sign In
                         </Link>
                     </Box>
                 </Box>
@@ -145,4 +129,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default UserSignIn;
