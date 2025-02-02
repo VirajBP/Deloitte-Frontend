@@ -1,187 +1,162 @@
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
-import EmailList from './EmailList';
-import OrderMetrics from './OrderMetrics';
-import ProcessingQueue from './ProcessingQueue';
-import NotificationBar from '../Notifications/NotificationBar';
-import EmailService from '../../services/emailService';
-import OrderService from '../../services/orderService';
-import NotificationService from '../../services/notificationService';
-import SearchFilters from './SearchFilters';
-import DateRangePicker from './DateRangePicker';
+import EmailList from '../Email/EmailList';
+import OrderList from '../Order/OrderList';
+import { Container, Grid, Paper, Typography, Box } from '@mui/material';
 import LoadingSpinner from '../common/LoadingSpinner';
-import ErrorMessage from '../common/ErrorMessage';
-import PieChart from './PieChart'; // Import PieChart component
 import { mockEmails, mockOrders } from '../../mocks/mockData';
 
 function Dashboard() {
   const [metrics, setMetrics] = useState({
-    newEmails: 0,
-    processingOrders: 0,
-    urgentOrders: 0,
-    completedToday: 0
+    totalEmails: 0,
+    flaggedEmails: 0,
+    totalOrders: 0,
+    processingOrders: 0
   });
 
   const [emails, setEmails] = useState(mockEmails);
-  const [processingQueue, setProcessingQueue] = useState(mockOrders);
+  const [orders, setOrders] = useState(mockOrders);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('all');
-  const [dateRange, setDateRange] = useState({ start: null, end: null });
-  const [orderStats, setOrderStats] = useState({}); // Initialize orderStats state
 
   useEffect(() => {
-    // Fetch initial data
-    fetchEmails();
-    fetchProcessingQueue();
-    
-    // Set up polling intervals
-    const emailInterval = setInterval(fetchEmails, 30000);
-    const queueInterval = setInterval(fetchProcessingQueue, 10000);
-
-    return () => {
-      clearInterval(emailInterval);
-      clearInterval(queueInterval);
-    };
+    fetchData();
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchEmails = async () => {
+  const fetchData = async () => {
     setIsLoading(true);
     try {
-      // For development, use mock data instead of API call
-      // const fetchedEmails = await emailService.fetchEmails();
       const fetchedEmails = mockEmails;
+      const fetchedOrders = mockOrders;
+      
       setEmails(fetchedEmails);
-      updateMetrics(fetchedEmails, processingQueue);
+      setOrders(fetchedOrders);
+      
+      updateMetrics(fetchedEmails, fetchedOrders);
     } catch (error) {
-      console.error('Error fetching emails:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const fetchProcessingQueue = async () => {
-    try {
-      // For development, use mock data instead of API call
-      // const queue = await orderService.getProcessingQueue();
-      const queue = mockOrders;
-      setProcessingQueue(queue);
-      updateMetrics(emails, queue);
-    } catch (error) {
-      console.error('Error fetching processing queue:', error);
-    }
-  };
-
-  const updateMetrics = (currentEmails, currentQueue) => {
+  const updateMetrics = (currentEmails, currentOrders) => {
     setMetrics({
-      newEmails: currentEmails.length,
-      processingOrders: currentQueue.length,
-      urgentOrders: currentEmails.filter(email => email.priority === 'urgent').length,
-      completedToday: currentQueue.filter(order => order.status === 'completed').length
+      totalEmails: currentEmails.length,
+      flaggedEmails: currentEmails.filter(email => email.needsReview).length,
+      totalOrders: currentOrders.length,
+      processingOrders: currentOrders.filter(order => order.status === 'processing').length
     });
-    // Update orderStats
-    const stats = {
-      labels: ['New Orders', 'Processing Orders', 'Urgent Orders', 'Completed Today'],
-      datasets: [{
-        data: [currentEmails.length, currentQueue.length, currentEmails.filter(email => email.priority === 'urgent').length, currentQueue.filter(order => order.status === 'completed').length],
-        backgroundColor: [
-          'rgba(52, 152, 219, 1)',
-          'rgba(46, 204, 113, 1)',
-          'rgba(231, 76, 60, 1)',
-          'rgba(243, 156, 18, 1)',
-        ],
-        borderColor: [
-          'rgba(52, 152, 219, 1)',
-          'rgba(46, 204, 113, 1)',
-          'rgba(231, 76, 60, 1)',
-          'rgba(243, 156, 18, 1)',
-        ],
-        borderWidth: 1
-      }]
-    };
-    setOrderStats(stats);
-  };
-
-  const handleProcessOrder = async (emailId) => {
-    const orderDetails = await EmailService.parseEmailOrder(emailId);
-    if (orderDetails) {
-      const processedOrder = await OrderService.processOrder(orderDetails);
-      if (processedOrder) {
-        await NotificationService.sendNotification(
-          orderDetails.userId,
-          `Order #${orderDetails.orderNumber} is being processed`
-        );
-        fetchEmails();
-        fetchProcessingQueue();
-      }
-    }
-  };
-
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-    // Filter emails based on search term
-    const filteredEmails = emails.filter(email => 
-      email.orderNumber.includes(term) || 
-      email.customerName.toLowerCase().includes(term.toLowerCase())
-    );
-    setEmails(filteredEmails);
-  };
-
-  const handleFilterChange = (filterValue) => {
-    setFilter(filterValue);
-    // Apply filters
-  };
-
-  const handleDateChange = (type, date) => {
-    setDateRange(prev => ({ ...prev, [type]: date }));
-    // Filter by date range
   };
 
   return (
-    <div className="dashboard">
-      <NotificationBar />
-      
-      <div className="dashboard-header">
-        <h1>Order Processing Dashboard</h1>
-        <OrderMetrics metrics={metrics} />
-      </div>
+    <Container maxWidth="lg" className="dashboard">
+      {/* Metrics Section */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Dashboard Overview
+          </Typography>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper 
+            sx={{ 
+              p: 2, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              bgcolor: 'primary.light' 
+            }}
+          >
+            <Typography variant="h6">Total Emails</Typography>
+            <Typography variant="h3">{metrics.totalEmails}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper 
+            sx={{ 
+              p: 2, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              bgcolor: 'warning.light'
+            }}
+          >
+            <Typography variant="h6">Flagged Emails</Typography>
+            <Typography variant="h3">{metrics.flaggedEmails}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper 
+            sx={{ 
+              p: 2, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              bgcolor: 'success.light'
+            }}
+          >
+            <Typography variant="h6">Total Orders</Typography>
+            <Typography variant="h3">{metrics.totalOrders}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper 
+            sx={{ 
+              p: 2, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              bgcolor: 'info.light'
+            }}
+          >
+            <Typography variant="h6">Processing Orders</Typography>
+            <Typography variant="h3">{metrics.processingOrders}</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-        <SearchFilters 
-          onSearch={handleSearch}
-          onFilterChange={handleFilterChange}
-        />
+      {/* Email List Section */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <Typography variant="h6">Recent Emails</Typography>
+          <Typography 
+            variant="body2" 
+            color="primary" 
+            sx={{ cursor: 'pointer' }}
+            onClick={() => window.location.href = '/email_list'}
+          >
+            View All
+          </Typography>
+        </Box>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <EmailList limitEntries={5} />
+        )}
+      </Paper>
 
-      <div className="dashboard-content">
-        {/* <div className="content-main"> */}
-            <div className="orders-column">
-              <h2>New Orders</h2>
-              {isLoading ? (
-                <LoadingSpinner />
-              ) : (
-                <EmailList 
-                  emails={emails} 
-                  onProcess={handleProcessOrder}
-                />
-              )}
-            </div>
-          <div className="orders-section">
-            
-          <div className="chart-section">
-            <PieChart data={orderStats} />
-          </div>
-            <div className="orders-column preprocess">
-              <h2>Processing Queue</h2>
-              {isLoading ? (
-                <LoadingSpinner />
-              ) : (
-                <ProcessingQueue orders={processingQueue} />
-              )}
-            </div>
-          </div>
-          
-        {/* </div> */}
-      </div>
-    </div>
+      {/* Order List Section */}
+      <Paper sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <Typography variant="h6">Recent Orders</Typography>
+          <Typography 
+            variant="body2" 
+            color="primary" 
+            sx={{ cursor: 'pointer' }}
+            onClick={() => window.location.href = '/order_list'}
+          >
+            View All
+          </Typography>
+        </Box>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <OrderList limitEntries={5} orders={orders.slice(0, 5)} />
+        )}
+      </Paper>
+    </Container>
   );
 }
 
