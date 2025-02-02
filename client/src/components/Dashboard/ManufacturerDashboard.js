@@ -6,7 +6,7 @@ import { Container, Grid, Paper, Typography, Box } from '@mui/material';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { mockEmails, mockOrders } from '../../mocks/mockData';
 
-function Dashboard() {
+function ManufacturerDashboard() {
   const [metrics, setMetrics] = useState({
     totalEmails: 0,
     flaggedEmails: 0,
@@ -52,11 +52,10 @@ function Dashboard() {
 
   return (
     <Container maxWidth="lg" className="dashboard">
-      {/* Metrics Section */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12}>
           <Typography variant="h4" component="h1" gutterBottom>
-            Dashboard Overview
+            Manufacturer Dashboard
           </Typography>
         </Grid>
         <Grid item xs={12} md={3}>
@@ -160,4 +159,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default ManufacturerDashboard; 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import axios from '../utils/axios';
 import {
     Container,
     Box,
@@ -14,6 +14,7 @@ import {
     IconButton,
     Tabs,
     Tab,
+    Alert
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -29,183 +30,186 @@ import {
 import './Profile.css';
 
 const Profile = () => {
+    const { user } = useAuth();
     const [loading, setLoading] = useState(true);
-    const [profileData, setProfileData] = useState(null);
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
-    const [editMode, setEditMode] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        department: '',
+        location: '',
+        timezone: ''
+    });
     const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
-        const fetchProfileData = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:5000/api/profile', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setProfileData(response.data);
-                setLoading(false);
-            } catch (error) {
-                toast.error('Error fetching profile data');
-                setLoading(false);
-            }
-        };
-
         fetchProfileData();
     }, []);
 
-    const handleLogout = () => {
-        logout();
-        navigate('/signin');
-        toast.info('Logged out successfully');
+    const fetchProfileData = async () => {
+        try {
+            const response = await axios.get('/api/profile');
+            setFormData(response.data);
+        } catch (err) {
+            setError('Failed to load profile data');
+            console.error('Error fetching profile:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setSuccess('');
+        
+        try {
+            const response = await axios.put('/api/profile', formData);
+            setFormData(response.data);
+            setSuccess('Profile updated successfully');
+            setIsEditing(false);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to update profile');
+        }
     };
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
     };
 
-    const handleEdit = () => {
-        setEditMode(true);
-    };
-
-    const handleSave = () => {
-        setEditMode(false);
-        // Add API call to save profile data
-    };
-
-    const handleCancel = () => {
-        setEditMode(false);
-        // Reset any changes
-    };
-
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
                 <CircularProgress />
             </Box>
         );
     }
 
     return (
-        <Container component="main" maxWidth="sm">
+        <Container maxWidth="md">
             <ToastContainer />
-            <Box className="profile-container">
-                <Paper elevation={0} className="profile-header">
-                    <Grid container spacing={3} alignItems="center">
-                        <Grid item>
-                            <Avatar
-                                src="/path-to-profile-image.jpg"
-                                className="profile-avatar"
+            <Paper sx={{ p: 4, mt: 4 }}>
+                <Box sx={{ mb: 4, textAlign: 'center' }}>
+                    <Avatar
+                        sx={{
+                            width: 100,
+                            height: 100,
+                            margin: '0 auto',
+                            mb: 2,
+                            bgcolor: 'primary.main'
+                        }}
+                    >
+                        {formData.name?.charAt(0)}
+                    </Avatar>
+                    <Typography variant="h5" component="h1">
+                        Profile Settings
+                    </Typography>
+                </Box>
+
+                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+
+                <Box component="form" onSubmit={handleSubmit}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Full Name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                disabled={!isEditing}
                             />
                         </Grid>
-                        <Grid item xs>
-                            <Typography variant="h4" className="profile-name">
-                                {profileData?.name}
-                            </Typography>
-                            <Typography variant="subtitle1" color="textSecondary">
-                                {profileData?.role}
-                            </Typography>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                            />
                         </Grid>
-                        <Grid item>
-                            {!editMode ? (
-                                <Button
-                                    startIcon={<EditIcon />}
-                                    variant="outlined"
-                                    onClick={handleEdit}
-                                >
-                                    Edit Profile
-                                </Button>
-                            ) : (
-                                <Box>
-                                    <IconButton color="primary" onClick={handleSave}>
-                                        <SaveIcon />
-                                    </IconButton>
-                                    <IconButton color="error" onClick={handleCancel}>
-                                        <CancelIcon />
-                                    </IconButton>
-                                </Box>
-                            )}
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Phone"
+                                name="phone"
+                                value={formData.phone || ''}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Department"
+                                name="department"
+                                value={formData.department || ''}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Location"
+                                name="location"
+                                value={formData.location || ''}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Timezone"
+                                name="timezone"
+                                value={formData.timezone || ''}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                            />
                         </Grid>
                     </Grid>
-                </Paper>
 
-                <Box className="profile-content">
-                    <Tabs
-                        value={activeTab}
-                        onChange={handleTabChange}
-                        className="profile-tabs"
-                    >
-                        <Tab icon={<EditIcon />} label="Personal Info" />
-                        <Tab icon={<SecurityIcon />} label="Security" />
-                        <Tab icon={<NotificationsIcon />} label="Notifications" />
-                        <Tab icon={<HistoryIcon />} label="Activity" />
-                    </Tabs>
-
-                    <Box className="tab-content">
-                        {activeTab === 0 && (
-                            <Grid container spacing={3}>
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        fullWidth
-                                        label="Full Name"
-                                        value={profileData?.name}
-                                        disabled={!editMode}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        fullWidth
-                                        label="Email"
-                                        value={profileData?.email}
-                                        disabled={!editMode}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        fullWidth
-                                        label="Phone"
-                                        value={profileData?.phone}
-                                        disabled={!editMode}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        fullWidth
-                                        label="Department"
-                                        value={profileData?.department}
-                                        disabled={!editMode}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        fullWidth
-                                        label="Location"
-                                        value={profileData?.location}
-                                        disabled={!editMode}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <TextField
-                                        fullWidth
-                                        label="Timezone"
-                                        value={profileData?.timezone}
-                                        disabled={!editMode}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                            </Grid>
+                    <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        {isEditing ? (
+                            <>
+                                <Button onClick={() => setIsEditing(false)}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Save Changes
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setIsEditing(true)}
+                            >
+                                Edit Profile
+                            </Button>
                         )}
-                        {/* Add other tab contents here */}
                     </Box>
                 </Box>
-            </Box>
+            </Paper>
         </Container>
     );
 };
